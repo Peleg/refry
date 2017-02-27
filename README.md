@@ -1,21 +1,19 @@
-# TpT-Connect
+# refry
 
-[![CircleCI](https://circleci.com/gh/TeachersPayTeachers/tpt-connect.svg?style=svg&circle-token=3b926562683e2d1715753c3b9ace315165daa519)](https://circleci.com/gh/TeachersPayTeachers/tpt-connect)
-
-TpT-Connect is a [Redux](https://github.com/reactjs/react-redux) extension
+refry is a [Redux](https://github.com/reactjs/react-redux) extension
 which creates simple interfaces for your React components' to interact with
 your RESTful API.
 
-TpT-Connect automatically fetches your components' data dependencies on
+refry automatically fetches your components' data dependencies on
 `componentWillMount` and `componentDidUpdate` when relevant props are changed
 so you don't have to worry about when and how to fetch your data. To make your
-resources available across multiple components, TpT-Connect normalizes and
+resources available across multiple components, refry normalizes and
 caches your resources in its Redux state.
 
 ## Install
 
 ```Bash
-$ npm install --save @teachers/tpt-connect
+$ yarn add github:peleg/refry
 ```
 
 ## Usage
@@ -23,7 +21,7 @@ $ npm install --save @teachers/tpt-connect
 #### Option 1: As a black box
 
 ```JavaScript
-import { ConnectProvider } from '@teachers/tpt-connect';
+import { ConnectProvider } from 'refry';
 
 render() {
   <ConnectProvider>
@@ -34,12 +32,12 @@ render() {
 
 #### Option 2: As a Redux plugin
 
-Create your Redux store with the `tpt-connect`'s reducer and middleware:
+Create your Redux store with the `refry`'s reducer and middleware:
 
 ```JavaScript
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import { connectReducer, connectMiddleware } from '@teachers/tpt-connect';
+import { connectReducer, connectMiddleware } from 'refry';
 
 const store =
   createStore(combineReducers({
@@ -59,7 +57,7 @@ render() {
 #### And in your components throughout the app:
 
 ```JavaScript
-import { defineResources, Schema, arrayOf } from '@teachers/tpt-connect';
+import { defineResources, Schema, arrayOf } from 'refry';
 const userSchema = new Schema('user');
 
 @defineResources((state, ownProps) => ({
@@ -133,18 +131,18 @@ These are the options each resource definition takes:
   action).
 
 - `schema` (`Schema|String`, optional) - an instance of
-  [normalizr](://github.com/gaearon/normalizr)'s `Schema` used for TpT-Connect
+  [normalizr](://github.com/gaearon/normalizr)'s `Schema` used for refry
   to infer how the resource returned to be stored in the global state for
-  future use. If a string is given, TpT-Connect will convert it to a simple
+  future use. If a string is given, refry will convert it to a simple
   normalizr Schema with the string as the key. If Schema is not provided,
-  TpT-Connect will not attempt to normalize any of the data returned from the
+  refry will not attempt to normalize any of the data returned from the
   server.
 
 - `url` (`String`, required) - a complete url of the endpoint
 
 - `params` (`Object`, optional) - an object listing the endpoint's query params.
   This is the preferred method to add query params to a request. If the params
-  are hardcoded in the URL, TpT-Connect will not be able to normalize them and
+  are hardcoded in the URL, refry will not be able to normalize them and
   store the resource for future use by other components.
 
 - `method` (`String`, optional, defaults to `GET`) - the request's method to be
@@ -177,7 +175,7 @@ These are the options each resource definition takes:
   ```
 
 - `updateStrategy` (`Boolean|String`, optional, defaults to `replace` when
-  `GET`; otherwise `false`) - whether or not TpT-Connect should store the
+  `GET`; otherwise `false`) - whether or not refry should store the
   response data in its Redux store. Available options are: `'replace'` (same as
   `true`), `'append'` (adds the returned resource to the existing resources in
   the state), `'prepend'` (prepends resource to the existing resources in state)
@@ -185,18 +183,18 @@ These are the options each resource definition takes:
   in the state), `false` to not store at all, and if a function is passed in
   it will use it as a custom merge strategy calling with `function(newArray, oldArray)`.  
   This option is useful especially when an action returns returns an updated/deleted
-  resource and you want TpT-Connect to update its store w/out having to make additional
+  resource and you want refry to update its store w/out having to make additional
   requests.
 
 - `computeKey` (`Function`, optional) - a function which computes the keys stored in
-  tpt-connect's store before hashing.  The arguments are `url`, `headers`, `method` and
-  `body`.  By default tpt-connect concatenates and hashes the url, method type, body and
-  all the headers.  This function can be used to make tpt-connect not hash the headers if
+  refry's store before hashing.  The arguments are `url`, `headers`, `method` and
+  `body`.  By default refry concatenates and hashes the url, method type, body and
+  all the headers.  This function can be used to make refry not hash the headers if
   they change but don't affect the request.
 
 - `actions` (`Object`, optional) - an object defining functions, or
   sub-objects, which are used as sub-resource definitions to request at a later
-  time and will be available on the TpT-Connect resource. Calling an action
+  time and will be available on the refry resource. Calling an action
   will execute the defined action and return the promise yielded from the
   dispatched request. For more information, check out the example above.
 
@@ -204,7 +202,7 @@ These are the options each resource definition takes:
     declared above for resource definitions, with a few additional attributes:
 
     - `refetchAfter` (`Boolean|String`, optional, defaults to `false`) -
-      whether or not TpT-Connect should refetch the resource after the action
+      whether or not refry should refetch the resource after the action
       completes. Set to `'success'` to refetch only after successful response or
       `'error'` to only refetch after failure.
 
@@ -214,16 +212,16 @@ These are the options each resource definition takes:
       not retrieve it from the state anymore.
     - `prepopulate` - prepopulate the store with a placeholder for the resource
       until it is fetched successfully. Called by default on all of
-      TpT-Connect's resources.
+      refry's resources.
 
 ### Server Rendering
 
-Thanks to TpT-Connect keeping track of its outstanding requests for resources
+Thanks to refry keeping track of its outstanding requests for resources
 in its store, the above example could be easily rendered on the server as well:
 
 ```JavaScript
 
-// By setting `isServer`, TpT-Connect knows to fetch even w/out
+// By setting `isServer`, refry knows to fetch even w/out
 // `componentDidMount` which is called only on client
 const tree = (
   <ConnectProvider isServer store={ myStore }>
@@ -242,20 +240,20 @@ const unsubscribe = myStore.subscribe(() => {
   }
 });
 
-// First render to trigger all of TpT-Connect's automatic fetches
+// First render to trigger all of refry's automatic fetches
 ReactDOM.renderToStaticMarkup(tree);
 
 ```
 
 ### Debugging
 
-TpT-Connect uses [debug](https://github.com/visionmedia/debug). In order to
-turn on more verbose logging, set the `tptconnect` namespace in localStorage to
+refry uses [debug](https://github.com/visionmedia/debug). In order to
+turn on more verbose logging, set the `refry` namespace in localStorage to
 allow `info`, `error`, or all via `*`. For example, to enable all levels of
-logging for TpT-Connect, set:
+logging for refry, set:
 
 ```JavaScript
-localStorage.debug = 'tptconnect:*';
+localStorage.debug = 'refry:*';
 ```
 
 (NOTE: when running on the server, set the env var `DEBUG`)
