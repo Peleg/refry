@@ -1,4 +1,4 @@
-import { PropTypes } from 'react';
+import { PropTypes } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import hoistStatics from 'hoist-non-react-statics';
 import * as actions from '../actions';
@@ -97,7 +97,7 @@ export default function defineResources(mapStateToResources) {
         // overwriting to include our resourceProps as well before redux renders
         this.stateProps = { ...this.stateProps, ...this.resourceProps };
 
-        // if this is just a tpt-connect component, we can prevent triggering a
+        // if this is just a refry component, we can prevent triggering a
         // re-render if resourceProps stayed the same
         return this.haveResourcePropsChanged ||
           isAlreadyWrappedInConnect && haveStatePropsChanged;

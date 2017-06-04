@@ -5,7 +5,7 @@ import normalizeUrl from 'normalize-url';
 import stringHash from 'string-hash';
 import debug from 'debug';
 import { Schema, normalize } from 'normalizr';
-import { computePayload } from '../actions';
+import { computePayload, dispatchRequest, prepopulateResource } from '../actions';
 import { denormalize } from 'denormalizr';
 
 /**
@@ -128,13 +128,13 @@ export function normalizeResourceDefinition(definition) {
 
   invariant(
     definition.url !== undefined,
-    'Must include a URL for TpT-Connect to retrieve your resource'
+    'Must include a URL for Refry to retrieve your resource'
   );
 
   invariant(
     !/\?[^#]/.test(definition.url),
     'Include query parameters under `params` in your resource definition ' +
-    'instead of directly in the URL. That will improve TpT-Connect\'s ability' +
+    'instead of directly in the URL. That will improve Refry\'s ability' +
     'to cache your responses'
   );
 
@@ -183,7 +183,7 @@ export function extendFunction(...functions) {
 }
 
 /**
- * Traverse a react tree and trigger all tpt-connect fetches so we dont have to
+ * Traverse a react tree and trigger all refry fetches so we dont have to
  * render twice
  *
  * idea taken from react-apollo
@@ -256,12 +256,9 @@ export const triggerFetches = (() => { // IIFE
 })();
 
 /**
- * Subscribing to store changes so we can determine when tpt-connect is
- * done fetching its data before we re-render
+ * Returns a promise which resolves when all refry requests have finished
  */
-export function fetchTreeData(reactTree, store) {
-  triggerFetches(reactTree);
-
+export function subscribeToStore(store) {
   return new Promise((resolve, reject) => {
     const { isAllFetched = true } = store.getState().connect;
     if (isAllFetched) {
@@ -290,3 +287,18 @@ export function fetchTreeData(reactTree, store) {
   });
 }
 
+/**
+ * Subscribing to store changes so we can determine when refry is
+ * done fetching its data before we re-render
+ */
+export function fetchTreeData(reactTree, store) {
+  triggerFetches(reactTree);
+  return subscribeToStore(store);
+}
+
+export function query(resourceDefinition, store) {
+  resourceDefinition = normalizeResourceDefinition(resourceDefinition);
+  store.dispatch(prepopulateResource(resourceDefinition));
+  store.dispatch(dispatchRequest(resourceDefinition, {}));
+  return subscribeToStore(store);
+}
