@@ -1,4 +1,4 @@
-# refry
+# refry - Seamless data fetching for the REST
 
 refry is a [Redux](https://github.com/reactjs/react-redux) extension
 which creates simple interfaces for your React components to interact with
