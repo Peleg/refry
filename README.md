@@ -1,7 +1,7 @@
 # refry
 
 refry is a [Redux](https://github.com/reactjs/react-redux) extension
-which creates simple interfaces for your React components' to interact with
+which creates simple interfaces for your React components to interact with
 your RESTful API.
 
 refry automatically fetches your components' data dependencies on
